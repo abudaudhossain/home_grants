@@ -1,37 +1,11 @@
-const express = require("express");
-const app = express();
-const mongoose = require('mongoose');
-require('dotenv').config();
-const cors = require('cors');
+const express = require('express');
+const students = require('../app/controllers/students');
+const welcome = require('../app/controllers/welcome');
+const router = express.Router();
 
-const port = process.env.PORT || 3000;
+router.get('/', welcome.welcome);
+router.post("/newStudent", students.createNewStudents)
+router.get("/studentList/:page", students.studentList)
+router.get("/search", students.search )
 
-// middleware 
-app.use(express.json({ limit: "500mb" }));
-app.use(express.urlencoded({ extended: true, limit: '5mb' }))
-
-
-//database connection with mongoose
-const dbURL = `mongodb://localhost:27017/${process.env.DB_NAME}`;
-mongoose.connect(dbURL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-const db = mongoose.connection;
-db.on("error", (error) => console.log(error));
-db.once('open', () => console.log("Mong DB connect success"));
-
-
-
-app.use("/", require('./routes/web'))
-app.use("/api", require('./routes/api'))
-
-
-app.listen(port, () => {
-  console.log(`listening on port ${port}`)
-})
-
-
-
-
-
+module.exports = router;
